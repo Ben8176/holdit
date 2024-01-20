@@ -4,7 +4,6 @@ import { Audio } from 'expo-av';
 
 const VideoScreen = () => {
   useEffect(() => {
-    // Set audio mode
     const setAudioMode = async () => {
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
@@ -22,10 +21,18 @@ const VideoScreen = () => {
         await sound.loadAsync(require('../../assets/audio/fart-01.mp3'));
         console.log('Playing Sound');
         const playbackStatus = await sound.playAsync();
-        console.log('Playback Status', playbackStatus);
 
-        if (!playbackStatus.isPlaying) {
-          console.log('Sound is not playing - check playback status for details');
+        if (playbackStatus.isLoaded) {
+          // Check if the audio is playing
+          if (playbackStatus.isPlaying) {
+            console.log('Sound is playing');
+          } else {
+            console.log('Sound loaded but not playing');
+          }
+        } else {
+          if (playbackStatus.error) {
+            console.log(`Playback Error: ${playbackStatus.error}`);
+          }
         }
       } catch (error) {
         console.error('Failed to load and play the sound', error);
