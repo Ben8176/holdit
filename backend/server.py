@@ -1,5 +1,4 @@
-from flask import Flask, request, jsonify, send_file
-from elevenlabs import generate, save
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -7,16 +6,14 @@ app = Flask(__name__)
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route('/api/text-to-speech', methods=['POST'])
-def text_to_speech():
-    """
-    TTS with ElevenLabs
-    Request format: {"text": "Hello World!", "voice": "Grace"}
-    """
+@app.route('/api/video-to-text', methods=['POST'])
+def video_to_text():
     try:
-        text, voice = request.json["text"], request.json["voice"]
-        audio_bytes = generate(text=text, voice=voice)
-        save(audio_bytes, "speech.mp3")
-        return send_file("./speech.mp3", as_attachment=False)
+        video_file = request.files['video']
+        video_path = f'./video/{video_file.filename}'
+        video_file.save(video_path)
+        text = video_to_text(video_path)
+
+        return jsonify({'text': text})
     except Exception as e:
         return jsonify({'Error': str(e)}), 500
