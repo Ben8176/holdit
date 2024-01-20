@@ -1,77 +1,77 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-
-import { ExternalLink } from './ExternalLink';
-import { MonoText } from './StyledText';
-import { Text, View } from './Themed';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '@/constants/Colors';
 
 export default function EditScreenInfo({ path }: { path: string }) {
+  const [selectedVoice, setSelectedVoice] = useState('Male');
+  type VoiceOption = 'Male' | 'Female' | 'Androgynous';
+
+  const handleVoiceChange = (voice: VoiceOption) => {
+    setSelectedVoice(voice);
+  };
+
+  const getVoiceOptionStyle = (voice: VoiceOption) => ({
+    ...styles.voiceOption,
+    backgroundColor: selectedVoice === voice ? 'teal' : 'gray',
+  });
+
   return (
-    <View>
-      <View style={styles.getStartedContainer}>
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Open up the code for this screen:
-        </Text>
+    <View style={styles.container}>
+      <MaterialCommunityIcons name="account-voice" size={80} color={Colors.light.tint} />
+      <Text style={styles.headerText}>Please Select Your Voice</Text>
 
-        <View
-          style={[styles.codeHighlightContainer, styles.homeScreenFilename]}
-          darkColor="rgba(255,255,255,0.05)"
-          lightColor="rgba(0,0,0,0.05)">
-          <MonoText>{path}</MonoText>
-        </View>
-
-        <Text
-          style={styles.getStartedText}
-          lightColor="rgba(0,0,0,0.8)"
-          darkColor="rgba(255,255,255,0.8)">
-          Change any of the text, save the file, and your app will automatically update.
-        </Text>
-      </View>
-
-      <View style={styles.helpContainer}>
-        <ExternalLink
-          style={styles.helpLink}
-          href="https://docs.expo.io/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet">
-          <Text style={styles.helpLinkText} lightColor={Colors.light.tint}>
-            Tap here if your app doesn't automatically update after making changes
-          </Text>
-        </ExternalLink>
+      <View style={styles.settingsContainer}>
+        <TouchableOpacity
+          style={getVoiceOptionStyle('Male')}
+          onPress={() => handleVoiceChange('Male')}>
+          <Text style={styles.voiceText}>Male</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={getVoiceOptionStyle('Female')}
+          onPress={() => handleVoiceChange('Female')}>
+          <Text style={styles.voiceText}>Female</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={getVoiceOptionStyle('Androgynous')}
+          onPress={() => handleVoiceChange('Androgynous')}>
+          <Text style={styles.voiceText}>Androgynous</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  getStartedContainer: {
+  container: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 50,
+    // backgroundColor: 'white', // Assuming you want a white background
   },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightContainer: {
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    lineHeight: 24,
+  headerText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginBottom: 20,
     textAlign: 'center',
+    color: 'white'
   },
-  helpContainer: {
-    marginTop: 15,
-    marginHorizontal: 20,
+  settingsContainer: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  voiceOption: {
+    marginVertical: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    minWidth: 200,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
+  voiceText: {
+    color: 'white',
     textAlign: 'center',
   },
 });

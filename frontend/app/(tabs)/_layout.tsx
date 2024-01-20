@@ -19,14 +19,14 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Hello',
-          tabBarIcon: ({ color }) => <Entypo name="info-with-circle" size={28} color={color} />,
+          title: 'HoldIt',
+          tabBarIcon: ({ color }) => <Entypo name="cog" size={28} color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <Entypo
-                    name="info-with-circle"
+                    name="cog"
                     size={25}
                     color={Colors[colorScheme ?? 'light'].text}
                     style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}

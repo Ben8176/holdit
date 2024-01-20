@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "react-native-camera": "^4.2.1"
+    "react-native-camera": "^4.2.1",
+    "vector-icons": "^0.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",
