@@ -31,7 +31,10 @@
     "react-native-screens": "~3.29.0",
     "react-native-sound": "^0.11.2",
     "react-native-web": "~0.19.6",
-    "expo-av": "~13.10.3"
+    "expo-av": "~13.10.3",
+    "expo-camera": "~14.0.1",
+    "expo-media-library": "~15.9.1",
+    "expo-sharing": "~11.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
