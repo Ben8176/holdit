@@ -19,6 +19,8 @@ const VideoScreen = () => {
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState();
+  const [textFromServer, setTextFromServer] = useState(''); // State to store the text
+
 
   useEffect(() => {
     (async () => {
@@ -34,116 +36,21 @@ const VideoScreen = () => {
     return <Text>Permission not granted</Text>;
   }
 
-  // useEffect(() => {
-  //   // const setAudioMode = async () => {
-  //   //   await Audio.setAudioModeAsync({
-  //   //     playsInSilentModeIOS: true,
-  //   //     staysActiveInBackground: true,
-  //   //   });
-  //   // };
-
-  //   (async () => {
-  //     const cameraPermission = await Camera.requestCameraPermissionsAsync();
-  //     const microphonePermission = await Camera.requestMicrophonePermissionsAsync();
-  //     const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-
-  //     setHasCameraPermission(cameraPermission.status === "granted");
-  //     setHasMicrophonePermission(microphonePermission.status === "granted");
-  //     setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
-  //   })();
-  // }, []);
-
-  //   if (!hasCameraPermission) {
-  //     return <Text>Permission for camera not granted.</Text>
-  //   }
-
-  //   let recordVideo = () => {
-  //     setIsRecording(true);
-  //     let options = {
-  //       quality: "1080p",
-  //       maxDuration: 60,
-  //       mute: false
-  //     };
+    // Fetch text from Flask server
+    useEffect(() => {
+      const fetchText = async () => {
+        try {
+          const response = await fetch('http://your-flask-server.com/api/video-to-text');
+          const data = await response.json();
+          setTextFromServer(data.text); // Assuming the response has a 'text' key
+        } catch (error) {
+          console.error('Error fetching text:', error);
+        }
+      };
   
-  //     cameraRef.current.recordAsync(options).then((recordedVideo) => {
-  //       setVideo(recordedVideo);
-  //       setIsRecording(false);
-  //     });
-  //   };
+      fetchText();
+    }, []);
 
-  //   let stopRecording = () => {
-  //     setIsRecording(false);
-  //     cameraRef.current.stopRecording();
-  //   };
-
-  //   if (video) {
-  //     let shareVideo = () => {
-  //       shareAsync(video.uri).then(() => {
-  //         setVideo(undefined);
-  //       });
-  //     };
-  
-  //     let saveVideo = () => {
-  //       MediaLibrary.saveToLibraryAsync(video.uri).then(() => {
-  //         setVideo(undefined);
-  //       });
-  //     };
-  
-  //     return (
-  //       <SafeAreaView style={styles.container}>
-  //         <Video
-  //           style={styles.video}
-  //           source={{uri: video.uri}}
-  //           useNativeControls
-  //           resizeMode='contain'
-  //           isLooping
-  //         />
-  //         <Button title="Share" onPress={shareVideo} />
-  //         {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
-  //         <Button title="Discard" onPress={() => setVideo(undefined)} />
-  //       </SafeAreaView>
-  //     );
-  //   }
-
-  //   // Create a new instance of the Audio.Sound class
-  //   // const sound = new Audio.Sound();
-
-  //   // const loadAndPlay = async () => {
-  //   //   try {
-  //   //     console.log('Loading Sound');
-  //   //     await setAudioMode();
-  //   //     await sound.loadAsync(require('../../assets/audio/fart-01.mp3'));
-  //   //     console.log('Playing Sound');
-  //   //     const playbackStatus = await sound.playAsync();
-
-  //   //     if (playbackStatus.isLoaded) {
-  //   //       // Check if the audio is playing
-  //   //       if (playbackStatus.isPlaying) {
-  //   //         console.log('Sound is playing');
-  //   //       } else {
-  //   //         console.log('Sound loaded but not playing');
-  //   //       }
-  //   //     } else {
-  //   //       if (playbackStatus.error) {
-  //   //         console.log(`Playback Error: ${playbackStatus.error}`);
-  //   //       }
-  //   //     }
-  //   //   } catch (error) {
-  //   //     console.error('Failed to load and play the sound', error);
-  //   //   }
-  //   // };
-
-  //   // loadAndPlay();
-
-  //   return () => {
-  //     // console.log('Unloading Sound');
-  //     // sound.unloadAsync();
-  //     <Camera style={styles.container} ref={cameraRef}>
-  //       <View style={styles.buttonContainer}>
-  //         <Button title={isRecording ? "Stop Recording" : "Record Video"} onPress={isRecording ? stopRecording : recordVideo} />
-  //       </View>
-  //     </Camera>
-  //   };
 
   let recordVideo = async () => {
     setIsRecording(true);
@@ -185,12 +92,17 @@ const VideoScreen = () => {
   }
 
   return (
-    <Camera style={styles.container} ref={cameraRef}>
-      {/* Your additional screen content goes here */}
-      <View style={styles.buttonContainer}>
-        <Button title={isRecording ? "Stop Recording" : "Record"} onPress={isRecording ? stopRecording : recordVideo}></Button>
-      </View>
-    </Camera>
+    <SafeAreaView style={styles.container}>
+      {/* Display the fetched text */}
+      <Text>{textFromServer}</Text>
+
+      {/* Existing UI for video recording */}
+      <Camera style={styles.container} ref={cameraRef}>
+        <View style={styles.buttonContainer}>
+          <Button title={isRecording ? "Stop Recording" : "Record"} onPress={isRecording ? stopRecording : recordVideo} />
+        </View>
+      </Camera>
+    </SafeAreaView>
   );
 };
 
