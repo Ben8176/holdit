@@ -120,14 +120,16 @@ def video_to_text(video_path):
                 predictions.append(np.argmax(res))
 
                 if res[np.argmax(res)] > threshold:
-                    if len(sentence) == 0: 
-                        sentence.append(actions[np.argmax(res)])
+                    # if len(sentence) == 0: 
+                    #     sentence.append(actions[np.argmax(res)])
                     if len(predictions) > 1 and np.argmax(res) == predictions[-2]:
                         iframe += 1
                     else:
                         iframe = 0
                     if iframe == 20:
-                        if actions[np.argmax(res)] != sentence[-1]:
+                        if len(sentence) == 0: 
+                            sentence.append(actions[np.argmax(res)])
+                        elif actions[np.argmax(res)] != sentence[-1]:
                             sentence.append(actions[np.argmax(res)])
 
             cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
