@@ -48,14 +48,12 @@ const VideoScreen = () => {
 
   let cameraRef = useRef();
 
-  const NUM_COUNTDOWNS = 6;
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
     useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState();
   const [textFromServer, setTextFromServer] = useState(""); // State to store the text
-  const [countdown, setCountdown] = useState(NUM_COUNTDOWNS);
 
   useEffect(() => {
     (async () => {
@@ -80,22 +78,6 @@ const VideoScreen = () => {
       }
     };//
 
-    let recordVideo = async () => {
-      setIsRecording(true);
-      resetCountdown();
-      let options = {
-        quality: "720p",
-        maxDuration: 60,
-        mute: true,
-      };
-
-      cameraRef.current.recordAsync(options).then((recordedVideo) => {
-        setVideo(recordedVideo);
-        setIsRecording(false);
-      });
-
-      fetchText();
-    };
   }, []);
 
   // Create a new instance of the Audio.Sound class
@@ -149,9 +131,6 @@ const VideoScreen = () => {
       // playAudio();
       playSoundsSequentially(soundFiles, newWords, chosenVoice);
       setIsRecording(true);
-
-      //reset the countdown when we pressed record
-      resetCountdown();
 
       let options = {
         quality: "1080p",
