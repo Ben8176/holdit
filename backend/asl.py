@@ -96,7 +96,7 @@ def video_to_text(video_path):
 
             frame_counter += 1
 
-            if frame_counter <= 90:
+            if frame_counter <= 30:
                 continue
 
             # Make detections
