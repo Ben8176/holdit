@@ -48,7 +48,7 @@ def video_to_text(video_path):
         rh = np.array([[res.x, res.y, res.z] for res in results.right_hand_landmarks.landmark]).flatten() if results.right_hand_landmarks else np.zeros(21*3)
         return np.concatenate([pose, face, lh, rh])
 
-    actions = np.array(['hello', 'thanks', 'iloveyou', '_', 'iam', 'tired', 'hungry', 'good'])
+    actions = np.array(['hello', '_', 'iam', 'tired', 'hungry', 'good'])
 
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import LSTM, Dense
