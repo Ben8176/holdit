@@ -10,7 +10,7 @@ export default function TabOneScreen() {
 
 
   const handlePressOk = () => {
-    navigation.navigate('VideoScreen');
+    navigation.navigate('VideoScreen', { chosenVoice: selectedVoice });
   };
 
   return (

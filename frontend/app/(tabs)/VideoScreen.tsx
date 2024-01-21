@@ -7,7 +7,8 @@ import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { useRoute } from '@react-navigation/native';
 
-const newWords = ['good', 'hello', 'hungry', 'ily', 'im', 'null', 'sleepy', 'thankyou', 'you'];
+// const newWords = ['good', 'hello', 'hungry', 'ily', 'im', 'null', 'sleepy', 'thankyou', 'you'];
+const newWords = ['good', 'hello'];
 
 const soundFiles = {
   'hello_male': require('../../assets/audio/hello_male.mp3'),
@@ -41,7 +42,8 @@ const soundFiles = {
 
 const VideoScreen = () => {
   const route = useRoute();
-  const chosenVoice = route.params?.chosenVoice || 'male';
+  console.log('whats the route param: '+route.params?.chosenVoice);
+  const chosenVoice = route.params?.chosenVoice || 'andro';
   console.log('selected in videoscreen: '+chosenVoice);
 
   let cameraRef = useRef();
@@ -118,12 +120,12 @@ const VideoScreen = () => {
     }
   };
   // Usage example - to play only sounds that match the chosenVoice and newWords
-  playSoundsSequentially(soundFiles, newWords, chosenVoice);
+  // playSoundsSequentially(soundFiles, newWords, chosenVoice);
   
   let recordVideo = async () => {
     if (!isRecording) {
       // playAudio();
-      playSoundsSequentially(soundFiles);
+      playSoundsSequentially(soundFiles, newWords, chosenVoice);
       setIsRecording(true);
       let options = {
         quality: "1080p",
