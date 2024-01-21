@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from asl import video_to_text
 
 app = Flask(__name__)
 # Set maximum upload size to 100 MB
@@ -21,6 +22,7 @@ def video_to_text():
     if file:
         # Save the file or process it
         file.save('vids/' + file.filename)
+        print(video_to_text(file))
         return 'File uploaded successfully', 200
 
 if __name__ == '__main__':

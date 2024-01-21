@@ -84,6 +84,8 @@ threshold = 0.5
 cap = cv2.VideoCapture(1)
 # Set mediapipe model 
 with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
+    iframe = 0
+
     while cap.isOpened():
 
         # Read feed
@@ -102,24 +104,26 @@ with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=
         keypoints = extract_keypoints(results)
         sequence.append(keypoints)
         sequence = sequence[-30:]
-        
+
         if len(sequence) == 30:
             res = model.predict(np.expand_dims(sequence, axis=0))[0]
             print(actions[np.argmax(res)])
             predictions.append(np.argmax(res))
-            
-        #3. Viz logic
-            if np.unique(predictions[-10:])[0]==np.argmax(res): 
-                if res[np.argmax(res)] > threshold: 
-                    
-                    if len(sentence) > 0: 
-                        if actions[np.argmax(res)] != sentence[-1]:
-                            sentence.append(actions[np.argmax(res)])
-                    else:
-                        sentence.append(actions[np.argmax(res)])
 
-            if len(sentence) > 5: 
-                sentence = sentence[-5:]
+            if res[np.argmax(res)] > threshold:
+                if len(sentence) == 0: 
+                    sentence.append(actions[np.argmax(res)])
+                if len(predictions) > 1 and np.argmax(res) == predictions[-2]:
+                    iframe += 1
+                else:
+                    iframe = 0
+                if iframe == 12:
+                    if actions[np.argmax(res)] != sentence[-1]:
+                        sentence.append(actions[np.argmax(res)])
+                print(iframe)
+
+            # if len(sentence) > 5: 
+            #     sentence = sentence[-5:]
 
             # Viz probabilities
             image = prob_viz(res, actions, image, colors)

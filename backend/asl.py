@@ -75,7 +75,6 @@ def video_to_text(video_path):
             cv2.putText(output_frame, actions[num], (0, 85+num*40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2, cv2.LINE_AA)
             
         return output_frame
-    plt.figure(figsize=(18,18))
 
     sequence = []
     sentence = []
@@ -83,12 +82,17 @@ def video_to_text(video_path):
     threshold = 0.5
 
     cap = cv2.VideoCapture(video_path)
-    # Set mediapipe model 
+    # Set mediapipe model
     with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         while cap.isOpened():
 
+            # for i in range(60):
+            #     ret, frame = cap.read()
+
             # Read feed
             ret, frame = cap.read()
+            if not ret:
+                break
 
             # Make detections
             image, results = mediapipe_detection(frame, holistic)
@@ -104,10 +108,10 @@ def video_to_text(video_path):
             
             if len(sequence) == 30:
                 res = model.predict(np.expand_dims(sequence, axis=0))[0]
-                print(res)
                 print(actions[np.argmax(res)])
                 predictions.append(np.argmax(res))
-                    #3. Viz logic
+                
+                #3. Viz logic
                 if np.unique(predictions[-10:])[0]==np.argmax(res): 
                     if res[np.argmax(res)] > threshold: 
                         
@@ -122,10 +126,8 @@ def video_to_text(video_path):
 
                 # Viz probabilities
                 image = prob_viz(res, actions, image, colors)
-                return sentence
+                sequence = []
 
-
-                    
             cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
             cv2.putText(image, ' '.join(sentence), (3,30), 
                         cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
@@ -138,5 +140,6 @@ def video_to_text(video_path):
                 break
         cap.release()
         cv2.destroyAllWindows()
-        
-        print(sequence)
+    cap.release()
+    cv2.destroyAllWindows()
+    return sentence
