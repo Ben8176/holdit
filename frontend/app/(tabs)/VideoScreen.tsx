@@ -1,20 +1,20 @@
 import { Audio } from 'expo-av';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Button } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
-import { Camera } from 'expo-camera';
+import { Camera, FlashMode } from 'expo-camera';
 import { Video } from 'expo-av';
-import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
-import * as FS from "expo-file-system"; // for sending mov file
 
 const VideoScreen = () => {
   let cameraRef = useRef();
+  const NUM_COUNTDOWNS = 6;
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState();
   const [textFromServer, setTextFromServer] = useState(''); // State to store the text
+  const [countdown, setCountdown] = useState(NUM_COUNTDOWNS);
 
   useEffect(() => {
     (async () => {
@@ -24,8 +24,31 @@ const VideoScreen = () => {
       setHasCameraPermission(cameraPermission.status === "granted");
       setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
     })();
+
   }, []);
   
+  useEffect(() => {
+    //schedules one time callback every 1000 ms
+    //called everytime countdown changes
+    let timer;
+    if (isRecording && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 500);
+    } else if (countdown <= 0) {
+      console.log("finished counting down");
+    }
+    
+
+    return () => clearTimeout(timer);
+  }, [countdown, isRecording]);
+
+
+  const resetCountdown = () => {
+    setCountdown(NUM_COUNTDOWNS);
+    console.log("reset countdown");
+  };
+
 
   // Fetch text from Flask server
   useEffect(() => {
@@ -41,6 +64,7 @@ const VideoScreen = () => {
 
     let recordVideo = async () => {
       setIsRecording(true);
+      resetCountdown();
       let options = {
         quality: "720p",
         maxDuration: 60,
@@ -51,11 +75,6 @@ const VideoScreen = () => {
         setVideo(recordedVideo);
         setIsRecording(false);
       });
-
-      // Set a timer for 1 second
-      setTimeout(() => {
-        stopRecording(); // Call the function to stop recording after 1 second
-      }, 3000); // 1000 milliseconds = 1 second
         
       fetchText();
     }
@@ -97,6 +116,10 @@ const VideoScreen = () => {
   let recordVideo = async () => {
     if (!isRecording) {
       setIsRecording(true);
+
+      //reset the countdown when we pressed record
+      resetCountdown();
+
       let options = {
         quality: "1080p",
         maxDuration: 60,
@@ -173,7 +196,7 @@ const VideoScreen = () => {
       <Text>{textFromServer}</Text>
 
       {/* UI for video recording */}
-      <Camera style={styles.container} ref={cameraRef}>
+      <Camera style={styles.container} ref={cameraRef} flashMode={countdown % 2 == 0 ? FlashMode.off : FlashMode.torch}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={isRecording ? stopRecording : recordVideo}
