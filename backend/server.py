@@ -10,7 +10,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 @app.route('/api/video-to-text', methods=['POST'])
-def video_to_text():
+def vid_to_text():
 
     if 'file' not in request.files:
         return 'No file part', 400
@@ -20,8 +20,7 @@ def video_to_text():
     if file:
         # Save the file or process it
         file.save('vids/' + file.filename)
-        print(video_to_text(file))
-        result_list = video_to_text(file)
+        result_list = video_to_text('vids/' + file.filename)
         return jsonify({'message': 'File uploaded successfully', 'result': result_list}), 200
 
 if __name__ == '__main__':

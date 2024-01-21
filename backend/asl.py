@@ -63,7 +63,7 @@ def video_to_text(video_path):
     model.add(Dense(32, activation='relu'))
     model.add(Dense(actions.shape[0], activation='softmax'))
 
-    model.load_weights(os.path.join(os.getcwd(), 'backend', 'action.h5'))
+    model.load_weights(os.path.join(os.getcwd(), 'action.h5'))
 
 
     from scipy import stats
