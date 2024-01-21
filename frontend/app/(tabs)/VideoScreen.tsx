@@ -1,10 +1,10 @@
 import { Audio } from 'expo-av';
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, Button } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
-import { Camera } from 'expo-camera';
+import { Camera, FlashMode } from 'expo-camera';
 import { Video } from 'expo-av';
-import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import axios from 'axios';
 import { useRoute } from '@react-navigation/native';
 
 // const newWords = ['good', 'hello', 'hungry', 'ily', 'im', 'null', 'sleepy', 'thankyou', 'you'];
@@ -47,16 +47,21 @@ const VideoScreen = () => {
   console.log('selected in videoscreen: '+chosenVoice);
 
   let cameraRef = useRef();
+
+  const NUM_COUNTDOWNS = 6;
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
-  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(false);
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
+    useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [video, setVideo] = useState();
-  const [textFromServer, setTextFromServer] = useState(''); // State to store the text
+  const [textFromServer, setTextFromServer] = useState(""); // State to store the text
+  const [countdown, setCountdown] = useState(NUM_COUNTDOWNS);
 
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermissionsAsync();
-      const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
+      const mediaLibraryPermission =
+        await MediaLibrary.requestPermissionsAsync();
 
       setHasCameraPermission(cameraPermission.status === "granted");
       setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
@@ -64,20 +69,37 @@ const VideoScreen = () => {
   }, []);
 
   // Fetch text from Flask server
-  // useEffect(() => {
-  //   const fetchText = async () => {
-  //     try {
-  //       const response = await fetch('/api/video-to-text');
-  //       const data = await response.json();
-  //       setTextFromServer(data.text); // Assuming the response has a 'text' key
-  //       playAudio(); // Play audio after fetching the text
-  //     } catch (error) {
-  //       console.error('Error fetching text:', error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchText = async () => {
+      try {
+        const response = await fetch("/api/video-to-text");
+        const data = await response.json();
+        setTextFromServer(data.text); // Assuming the response has a 'text' key
+      } catch (error) {
+        console.error("Error fetching text:", error);
+      }
+    };
 
-  //   fetchText();
-  // }, []);
+    let recordVideo = async () => {
+      setIsRecording(true);
+      resetCountdown();
+      let options = {
+        quality: "720p",
+        maxDuration: 60,
+        mute: true,
+      };
+
+      cameraRef.current.recordAsync(options).then((recordedVideo) => {
+        setVideo(recordedVideo);
+        setIsRecording(false);
+      });
+
+      fetchText();
+    };
+  }, []);
+
+  // Create a new instance of the Audio.Sound class
+  const sound = new Audio.Sound();
 
   // Function to play audio
   const playAudio = async () => {
@@ -127,22 +149,59 @@ const VideoScreen = () => {
       // playAudio();
       playSoundsSequentially(soundFiles, newWords, chosenVoice);
       setIsRecording(true);
+
+      //reset the countdown when we pressed record
+      resetCountdown();
+
       let options = {
         quality: "1080p",
         maxDuration: 60,
-        mute: true
+        mute: true,
       };
 
       cameraRef.current.recordAsync(options).then((recordedVideo) => {
         setVideo(recordedVideo);
         setIsRecording(false);
       });
+
     }
   };
 
   let stopRecording = () => {
-    setIsRecording(false);
-    cameraRef.current.stopRecording();
+    if (isRecording) {
+      setIsRecording(false);
+      cameraRef.current.stopRecording();
+    }
+  };
+
+  //send video to flask server
+  const uploadVideo = async (video) => {
+    try {
+      let formData = new FormData();
+
+      const uriParts = video.uri.split(".");
+      const fileType = uriParts[uriParts.length - 1];
+
+      formData.append("file", {
+        uri: video.uri,
+        type: `video/${fileType}`,
+        name: `video.${fileType}`,
+      });
+
+      const response = await axios.post(
+        "http://169.233.123.198:5000/api/video-to-text",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      console.log("Video upload response:", response.data);
+    } catch (error) {
+      console.error("Video upload error:", error);
+    }
   };
 
   if (video) {
@@ -152,17 +211,21 @@ const VideoScreen = () => {
       });
     };
 
+    //display video
     return (
       <SafeAreaView>
         <Video
           style={styles.video}
           source={{ uri: video.uri }}
           useNativeControls
-          resizeMode='contain'
+          resizeMode="contain"
           isLooping
         />
         <Button title="Discard" onPress={() => setVideo(undefined)} />
-        {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
+        {hasMediaLibraryPermission ? (
+          <Button title="Save" onPress={saveVideo} />
+        ) : undefined}
+        <Button title="Send 2 flask" onPress={() => uploadVideo(video)} />
       </SafeAreaView>
     );
   }
@@ -173,13 +236,18 @@ const VideoScreen = () => {
       <Text>{textFromServer}</Text>
 
       {/* UI for video recording */}
-      <Camera style={styles.container} ref={cameraRef}>
+      <Camera
+        style={styles.container}
+        ref={cameraRef}
+      >
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={isRecording ? stopRecording : recordVideo}
             style={isRecording ? styles.stopButton : styles.startButton}
           >
-            <Text style={styles.buttonText}>{isRecording ? "STOP" : "START"}</Text>
+            <Text style={styles.buttonText}>
+              {isRecording ? "STOP" : "START"}
+            </Text>
           </TouchableOpacity>
         </View>
       </Camera>
