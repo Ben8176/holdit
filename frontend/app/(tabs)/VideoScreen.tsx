@@ -11,6 +11,8 @@ import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import axios from 'axios';
+import * as FS from "expo-file-system"; // for sending mov file
 
 const VideoScreen = () => {
 
@@ -34,129 +36,23 @@ const VideoScreen = () => {
     return <Text>Permission not granted</Text>;
   }
 
-  // useEffect(() => {
-  //   // const setAudioMode = async () => {
-  //   //   await Audio.setAudioModeAsync({
-  //   //     playsInSilentModeIOS: true,
-  //   //     staysActiveInBackground: true,
-  //   //   });
-  //   // };
-
-  //   (async () => {
-  //     const cameraPermission = await Camera.requestCameraPermissionsAsync();
-  //     const microphonePermission = await Camera.requestMicrophonePermissionsAsync();
-  //     const mediaLibraryPermission = await MediaLibrary.requestPermissionsAsync();
-
-  //     setHasCameraPermission(cameraPermission.status === "granted");
-  //     setHasMicrophonePermission(microphonePermission.status === "granted");
-  //     setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
-  //   })();
-  // }, []);
-
-  //   if (!hasCameraPermission) {
-  //     return <Text>Permission for camera not granted.</Text>
-  //   }
-
-  //   let recordVideo = () => {
-  //     setIsRecording(true);
-  //     let options = {
-  //       quality: "1080p",
-  //       maxDuration: 60,
-  //       mute: false
-  //     };
-  
-  //     cameraRef.current.recordAsync(options).then((recordedVideo) => {
-  //       setVideo(recordedVideo);
-  //       setIsRecording(false);
-  //     });
-  //   };
-
-  //   let stopRecording = () => {
-  //     setIsRecording(false);
-  //     cameraRef.current.stopRecording();
-  //   };
-
-  //   if (video) {
-  //     let shareVideo = () => {
-  //       shareAsync(video.uri).then(() => {
-  //         setVideo(undefined);
-  //       });
-  //     };
-  
-  //     let saveVideo = () => {
-  //       MediaLibrary.saveToLibraryAsync(video.uri).then(() => {
-  //         setVideo(undefined);
-  //       });
-  //     };
-  
-  //     return (
-  //       <SafeAreaView style={styles.container}>
-  //         <Video
-  //           style={styles.video}
-  //           source={{uri: video.uri}}
-  //           useNativeControls
-  //           resizeMode='contain'
-  //           isLooping
-  //         />
-  //         <Button title="Share" onPress={shareVideo} />
-  //         {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
-  //         <Button title="Discard" onPress={() => setVideo(undefined)} />
-  //       </SafeAreaView>
-  //     );
-  //   }
-
-  //   // Create a new instance of the Audio.Sound class
-  //   // const sound = new Audio.Sound();
-
-  //   // const loadAndPlay = async () => {
-  //   //   try {
-  //   //     console.log('Loading Sound');
-  //   //     await setAudioMode();
-  //   //     await sound.loadAsync(require('../../assets/audio/fart-01.mp3'));
-  //   //     console.log('Playing Sound');
-  //   //     const playbackStatus = await sound.playAsync();
-
-  //   //     if (playbackStatus.isLoaded) {
-  //   //       // Check if the audio is playing
-  //   //       if (playbackStatus.isPlaying) {
-  //   //         console.log('Sound is playing');
-  //   //       } else {
-  //   //         console.log('Sound loaded but not playing');
-  //   //       }
-  //   //     } else {
-  //   //       if (playbackStatus.error) {
-  //   //         console.log(`Playback Error: ${playbackStatus.error}`);
-  //   //       }
-  //   //     }
-  //   //   } catch (error) {
-  //   //     console.error('Failed to load and play the sound', error);
-  //   //   }
-  //   // };
-
-  //   // loadAndPlay();
-
-  //   return () => {
-  //     // console.log('Unloading Sound');
-  //     // sound.unloadAsync();
-  //     <Camera style={styles.container} ref={cameraRef}>
-  //       <View style={styles.buttonContainer}>
-  //         <Button title={isRecording ? "Stop Recording" : "Record Video"} onPress={isRecording ? stopRecording : recordVideo} />
-  //       </View>
-  //     </Camera>
-  //   };
-
   let recordVideo = async () => {
     setIsRecording(true);
     let options = {
-      quality: "1080p",
+      quality: "720p",
       maxDuration: 60,
-      mute: true
+      mute: true,
     };
 
     cameraRef.current.recordAsync(options).then((recordedVideo) => {
-        setVideo(recordedVideo);
-        setIsRecording(false);
+      setVideo(recordedVideo);
+      setIsRecording(false);
     });
+
+    // Set a timer for 1 second
+    setTimeout(() => {
+      stopRecording(); // Call the function to stop recording after 1 second
+    }, 3000); // 1000 milliseconds = 1 second
   };
 
   let stopRecording = () => {
@@ -170,6 +66,37 @@ const VideoScreen = () => {
         setVideo(undefined);
       });
     };
+
+    //send video to flask server
+    const uploadVideo = async (video) => {
+      try {
+        let formData = new FormData();
+
+        const uriParts = video.uri.split('.');
+        const fileType = uriParts[uriParts.length - 1];
+
+        formData.append("file", {
+          uri: video.uri,
+          type: `video/${fileType}`,
+          name: `video.${fileType}`,
+        });
+
+        const response = await axios.post(
+          "http://169.233.123.198:5000/api/video-to-text",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log("Video upload response:", response.data);
+      } catch (error) {
+        console.error("Video upload error:", error);
+      }
+    };
+
     //display video
     return <SafeAreaView>
       <Video
@@ -181,6 +108,7 @@ const VideoScreen = () => {
       />
       <Button title="Discard" onPress={() => setVideo(undefined)} />
       {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
+      <Button title="Send 2 flask" onPress={() => uploadVideo(video)} />
     </SafeAreaView>
   }
 
