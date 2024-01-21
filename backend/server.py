@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
+from asl3 import video_to_text
 
 app = Flask(__name__)
+# Set maximum upload size to 100 MB
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 @app.route("/")
 def hello_world():
@@ -8,12 +11,31 @@ def hello_world():
 
 @app.route('/api/video-to-text', methods=['POST'])
 def video_to_text():
-    try:
-        video_file = request.files['video']
-        video_path = f'./video/{video_file.filename}'
-        video_file.save(video_path)
-        text = video_to_text(video_path)
 
-        return jsonify({'text': text})
-    except Exception as e:
-        return jsonify({'Error': str(e)}), 500
+    if 'file' not in request.files:
+        return 'No file part', 400
+    file = request.files['file']
+    if file.filename == '':
+        return 'No selected file', 400
+    print('FUCKING VALID FILE!')
+    print(file.filename)
+    if file:
+        # Save the file or process it
+        file.save('vids/' + file.filename)
+        return 'File uploaded successfully', 200
+    # try:
+    #     print(request.files)
+    #     video_file = request.files['file']
+    #     print(video_file)
+    #     video_file.save()
+    #     video_path = f'./video/{video_file.filename}'
+    #     print(video_path)
+    #     video_file.save(video_path)
+    #     text = video_to_text(video_path)
+
+    #     return jsonify({'text': text})
+    # except Exception as e:
+    #     return jsonify({'Error': str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
