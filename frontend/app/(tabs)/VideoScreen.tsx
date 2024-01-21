@@ -39,25 +39,26 @@ const VideoScreen = () => {
       }
     };
 
-  let recordVideo = async () => {
-    setIsRecording(true);
-    let options = {
-      quality: "720p",
-      maxDuration: 60,
-      mute: true,
-    };
+    let recordVideo = async () => {
+      setIsRecording(true);
+      let options = {
+        quality: "720p",
+        maxDuration: 60,
+        mute: true,
+      };
 
-    cameraRef.current.recordAsync(options).then((recordedVideo) => {
-      setVideo(recordedVideo);
-      setIsRecording(false);
-    });
+      cameraRef.current.recordAsync(options).then((recordedVideo) => {
+        setVideo(recordedVideo);
+        setIsRecording(false);
+      });
 
-    // Set a timer for 1 second
-    setTimeout(() => {
-      stopRecording(); // Call the function to stop recording after 1 second
-    }, 3000); // 1000 milliseconds = 1 second
+      // Set a timer for 1 second
+      setTimeout(() => {
+        stopRecording(); // Call the function to stop recording after 1 second
+      }, 3000); // 1000 milliseconds = 1 second
         
-    fetchText();
+      fetchText();
+    }
   }, []);
 
     // Create a new instance of the Audio.Sound class
