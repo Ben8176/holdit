@@ -78,7 +78,7 @@ const VideoScreen = () => {
       } catch (error) {
         console.error("Error fetching text:", error);
       }
-    };
+    };//
 
     let recordVideo = async () => {
       setIsRecording(true);
