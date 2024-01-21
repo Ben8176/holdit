@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useVoice } from '../VoiceContext.js';
 
 import Colors from '@/constants/Colors';
 
 export default function EditScreenInfo({ path }: { path: string }) {
-  const [selectedVoice, setSelectedVoice] = useState('Male');
+  const { selectedVoice, setSelectedVoice } = useVoice();
   type VoiceOption = 'male' | 'female' | 'andro';
 
   const handleVoiceChange = (voice: VoiceOption) => {

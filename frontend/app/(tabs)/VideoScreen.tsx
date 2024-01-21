@@ -5,8 +5,9 @@ import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import { useRoute } from '@react-navigation/native';
 
-const testArray = ['good', 'hello', 'hungry', 'ily', 'im', 'null', 'sleepy', 'thankyou', 'you'];
+const newWords = ['good', 'hello', 'hungry', 'ily', 'im', 'null', 'sleepy', 'thankyou', 'you'];
 
 const soundFiles = {
   'hello_male': require('../../assets/audio/hello_male.mp3'),
@@ -39,6 +40,10 @@ const soundFiles = {
 };
 
 const VideoScreen = () => {
+  const route = useRoute();
+  const chosenVoice = route.params?.chosenVoice || 'male';
+  console.log('selected in videoscreen: '+chosenVoice);
+
   let cameraRef = useRef();
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] = useState(false);
@@ -83,33 +88,38 @@ const VideoScreen = () => {
     }
   };
 
-const playSoundsSequentially = async (soundFiles, keyword) => {
-  for (const [key, file] of Object.entries(soundFiles)) {
-    if (key.includes(keyword)) {
-      try {
-        const sound = new Audio.Sound();
-        await sound.loadAsync(file);
-        await sound.playAsync();
+  const playSoundsSequentially = async (soundFiles, newWords, chosenVoice) => {
+    console.log('play sound seq');
+    for (const newWord of newWords) {
+      const soundKey = `${newWord}_${chosenVoice}`;
+      const file = soundFiles[soundKey];
+      console.log('key: ' + soundKey);
+      console.log('file: ' + file);
 
-        await new Promise((resolve) => {
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if (status.didJustFinish) {
-              sound.unloadAsync();
-              resolve();
-            }
+      if (file) {
+        try {
+          const sound = new Audio.Sound();
+          await sound.loadAsync(file);
+          await sound.playAsync();
+          console.log('promise');
+
+          await new Promise((resolve) => {
+            sound.setOnPlaybackStatusUpdate((status) => {
+              if (status.didJustFinish) {
+                sound.unloadAsync();
+                resolve();
+              }
+            });
           });
-        });
-      } catch (error) {
-        console.error('Error playing audio:', error);
+        } catch (error) {
+          console.error('Error playing audio:', error);
+        }
       }
     }
-  }
-};
-
-// Usage example - to play only female sounds
-playSoundsSequentially(soundFiles, 'female');
-
-
+  };
+  // Usage example - to play only sounds that match the chosenVoice and newWords
+  playSoundsSequentially(soundFiles, newWords, chosenVoice);
+  
   let recordVideo = async () => {
     if (!isRecording) {
       // playAudio();

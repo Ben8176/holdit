@@ -2,16 +2,20 @@ import React from 'react';
 import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useNavigation } from '@react-navigation/native';
-
+import { VoiceProvider, useVoice } from '../../VoiceContext.js';
 
 export default function TabOneScreen() {
   const navigation = useNavigation();
+  const { selectedVoice, setSelectedVoice } = useVoice(); // Access selectedVoice and setSelectedVoice from the context
+
 
   const handlePressOk = () => {
     navigation.navigate('VideoScreen');
   };
 
   return (
+    <VoiceProvider>
+
     <View style={styles.container}>
       <Image 
         source={{ uri: 'https://www.clker.com/cliparts/a/b/1/0/1260065522493659183deaf-symbol.svg.med.png' }} 
@@ -24,6 +28,7 @@ export default function TabOneScreen() {
         <Text style={styles.buttonText}>LET'S GO!</Text>
       </TouchableOpacity>
     </View>
+    </VoiceProvider>
   );
 }
 
