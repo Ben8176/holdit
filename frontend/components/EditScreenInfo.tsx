@@ -6,7 +6,7 @@ import Colors from '@/constants/Colors';
 
 export default function EditScreenInfo({ path }: { path: string }) {
   const [selectedVoice, setSelectedVoice] = useState('Male');
-  type VoiceOption = 'Male' | 'Female' | 'Androgynous';
+  type VoiceOption = 'male' | 'female' | 'andro';
 
   const handleVoiceChange = (voice: VoiceOption) => {
     setSelectedVoice(voice);
@@ -24,18 +24,18 @@ export default function EditScreenInfo({ path }: { path: string }) {
 
       <View style={styles.settingsContainer}>
         <TouchableOpacity
-          style={getVoiceOptionStyle('Male')}
-          onPress={() => handleVoiceChange('Male')}>
+          style={getVoiceOptionStyle('male')}
+          onPress={() => handleVoiceChange('male')}>
           <Text style={styles.voiceText}>Male</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={getVoiceOptionStyle('Female')}
-          onPress={() => handleVoiceChange('Female')}>
+          style={getVoiceOptionStyle('female')}
+          onPress={() => handleVoiceChange('female')}>
           <Text style={styles.voiceText}>Female</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={getVoiceOptionStyle('Androgynous')}
-          onPress={() => handleVoiceChange('Androgynous')}>
+          style={getVoiceOptionStyle('andro')}
+          onPress={() => handleVoiceChange('andro')}>
           <Text style={styles.voiceText}>Androgynous</Text>
         </TouchableOpacity>
       </View>

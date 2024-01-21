@@ -5,8 +5,36 @@ import { Camera } from 'expo-camera';
 import { Video } from 'expo-av';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-import axios from 'axios';
-import * as FS from "expo-file-system"; // for sending mov file
+
+const soundFiles = [
+  require('../../assets/audio/good_male.mp3'),
+  require('../../assets/audio/good_female.mp3'),
+  require('../../assets/audio/good_andro.mp3'),
+  require('../../assets/audio/hello_male.mp3'),
+  require('../../assets/audio/hello_female.mp3'),
+  require('../../assets/audio/hello_andro.mp3'),
+  require('../../assets/audio/hungry_male.mp3'),
+  require('../../assets/audio/hungry_female.mp3'),
+  require('../../assets/audio/hungry_andro.mp3'),
+  require('../../assets/audio/ily_male.mp3'),
+  require('../../assets/audio/ily_female.mp3'),
+  require('../../assets/audio/ily_andro.mp3'),
+  require('../../assets/audio/im_male.mp3'),
+  require('../../assets/audio/im_female.mp3'),
+  require('../../assets/audio/im_andro.mp3'),
+  require('../../assets/audio/null_male.mp3'),
+  require('../../assets/audio/null_female.mp3'),
+  require('../../assets/audio/null_andro.mp3'),
+  require('../../assets/audio/sleepy_male.mp3'),
+  require('../../assets/audio/sleepy_female.mp3'),
+  require('../../assets/audio/sleepy_andro.mp3'),
+  require('../../assets/audio/thankyou_male.mp3'),
+  require('../../assets/audio/thankyou_female.mp3'),
+  require('../../assets/audio/thankyou_andro.mp3'),
+  require('../../assets/audio/you_male.mp3'),
+  require('../../assets/audio/you_female.mp3'),
+  require('../../assets/audio/you_andro.mp3'),
+];
 
 const VideoScreen = () => {
   let cameraRef = useRef();
@@ -25,77 +53,61 @@ const VideoScreen = () => {
       setHasMediaLibraryPermission(mediaLibraryPermission.status === "granted");
     })();
   }, []);
-  
 
   // Fetch text from Flask server
-  useEffect(() => {
-    const fetchText = async () => {
-      try {
-        const response = await fetch('/api/video-to-text');
-        const data = await response.json();
-        setTextFromServer(data.text); // Assuming the response has a 'text' key
-      } catch (error) {
-        console.error('Error fetching text:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchText = async () => {
+  //     try {
+  //       const response = await fetch('/api/video-to-text');
+  //       const data = await response.json();
+  //       setTextFromServer(data.text); // Assuming the response has a 'text' key
+  //       playAudio(); // Play audio after fetching the text
+  //     } catch (error) {
+  //       console.error('Error fetching text:', error);
+  //     }
+  //   };
 
-    let recordVideo = async () => {
-      setIsRecording(true);
-      let options = {
-        quality: "720p",
-        maxDuration: 60,
-        mute: true,
-      };
-
-      cameraRef.current.recordAsync(options).then((recordedVideo) => {
-        setVideo(recordedVideo);
-        setIsRecording(false);
-      });
-
-      // Set a timer for 1 second
-      setTimeout(() => {
-        stopRecording(); // Call the function to stop recording after 1 second
-      }, 3000); // 1000 milliseconds = 1 second
-        
-      fetchText();
-    }
-  }, []);
-
-    // Create a new instance of the Audio.Sound class
-    const sound = new Audio.Sound();
-  
+  //   fetchText();
+  // }, []);
 
   // Function to play audio
-    const playAudio = async () => {
-      try {
-        console.log('Loading Sound');
-        // await setAudioMode();
-        await sound.loadAsync(require('../../assets/audio/ily_andro.mp3'));
-        console.log('Playing Sound');
-        const playbackStatus = await sound.playAsync();
+  const playAudio = async () => {
+    const sound = new Audio.Sound();
+    try {
+      await sound.loadAsync(require('../../assets/audio/hungry_male.mp3')); // Replace with your audio file
+      await sound.playAsync();
+    } catch (error) {
+      console.error('Error playing audio:', error);
+    }
+  };
 
-        if (playbackStatus.isLoaded) {
-          // Check if the audio is playing
-          if (playbackStatus.isPlaying) {
-            console.log('Sound is playing');
-          } else {
-            console.log('Sound loaded but not playing');
-          }
-        } else {
-          if (playbackStatus.error) {
-            console.log(`Playback Error: ${playbackStatus.error}`);
+  const playSoundsSequentially = async (soundFiles, index = 0) => {
+    const sound = new Audio.Sound();
+  
+    try {
+      await sound.loadAsync(soundFiles[index]);
+      await sound.playAsync();
+  
+      sound.setOnPlaybackStatusUpdate(async (playbackStatus) => {
+        if (playbackStatus.didJustFinish) {
+          // Unload the current sound
+          await sound.unloadAsync();
+  
+          // Play the next sound if it exists
+          if (index + 1 < soundFiles.length) {
+            await playSoundsSequentially(soundFiles, index + 1);
           }
         }
-      } catch (error) {
-        console.error('Failed to load and play the sound', error);
-      }
-    };
-
-    playAudio(); // Play audio after fetching the text
-
+      });
+    } catch (error) {
+      console.error('Error playing audio:', error);
+    }
+  };
 
   let recordVideo = async () => {
     if (!isRecording) {
+      // playAudio();
+      playSoundsSequentially(soundFiles);
       setIsRecording(true);
       let options = {
         quality: "1080p",
@@ -122,49 +134,19 @@ const VideoScreen = () => {
       });
     };
 
-    //send video to flask server
-    const uploadVideo = async (video) => {
-      try {
-        let formData = new FormData();
-
-        const uriParts = video.uri.split('.');
-        const fileType = uriParts[uriParts.length - 1];
-
-        formData.append("file", {
-          uri: video.uri,
-          type: `video/${fileType}`,
-          name: `video.${fileType}`,
-        });
-
-        const response = await axios.post(
-          "http://169.233.123.198:5000/api/video-to-text",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        console.log("Video upload response:", response.data);
-      } catch (error) {
-        console.error("Video upload error:", error);
-      }
-    };
-
-    //display video
-    return <SafeAreaView>
-      <Video
-        style={styles.video}
-        source={{uri: video.uri}}
-        useNativeControls
-        resizeMode='contain'
-        isLooping
-      />
-      <Button title="Discard" onPress={() => setVideo(undefined)} />
-      {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
-      <Button title="Send 2 flask" onPress={() => uploadVideo(video)} />
-    </SafeAreaView>
+    return (
+      <SafeAreaView>
+        <Video
+          style={styles.video}
+          source={{ uri: video.uri }}
+          useNativeControls
+          resizeMode='contain'
+          isLooping
+        />
+        <Button title="Discard" onPress={() => setVideo(undefined)} />
+        {hasMediaLibraryPermission ? <Button title="Save" onPress={saveVideo} /> : undefined}
+      </SafeAreaView>
+    );
   }
 
   return (
