@@ -127,7 +127,7 @@ def video_to_text(video_path):
                         iframe += 1
                     else:
                         iframe = 0
-                    if iframe == 13:
+                    if iframe == 20:
                         if actions[np.argmax(res)] != sentence[-1]:
                             sentence.append(actions[np.argmax(res)])
 

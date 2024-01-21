@@ -133,7 +133,7 @@ const VideoScreen = () => {
       setIsRecording(true);
 
       let options = {
-        quality: "1080p",
+        quality: "720p",
         maxDuration: 60,
         mute: true,
       };
