@@ -98,6 +98,10 @@ def video_to_text(video_path):
 
             if frame_counter <= 30:
                 continue
+                
+            frame = cv2.flip(frame, 0)
+            frame = cv2.flip(frame, 1)
+
 
             # Make detections
             image, results = mediapipe_detection(frame, holistic)
