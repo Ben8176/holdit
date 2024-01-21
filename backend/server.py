@@ -17,13 +17,12 @@ def video_to_text():
     file = request.files['file']
     if file.filename == '':
         return 'No selected file', 400
-    print('FUCKING VALID FILE!')
-    print(file.filename)
     if file:
         # Save the file or process it
         file.save('vids/' + file.filename)
         print(video_to_text(file))
-        return 'File uploaded successfully', 200
+        result_list = video_to_text(file)
+        return jsonify({'message': 'File uploaded successfully', 'result': result_list}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

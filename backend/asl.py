@@ -84,15 +84,20 @@ def video_to_text(video_path):
     cap = cv2.VideoCapture(video_path)
     # Set mediapipe model
     with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-        while cap.isOpened():
+        iframe = 0
+        frame_counter = 0
 
-            # for i in range(60):
-            #     ret, frame = cap.read()
+        while cap.isOpened():
 
             # Read feed
             ret, frame = cap.read()
             if not ret:
                 break
+
+            frame_counter += 1
+
+            if frame_counter <= 90:
+                continue
 
             # Make detections
             image, results = mediapipe_detection(frame, holistic)
@@ -105,28 +110,22 @@ def video_to_text(video_path):
             keypoints = extract_keypoints(results)
             sequence.append(keypoints)
             sequence = sequence[-30:]
-            
+
             if len(sequence) == 30:
                 res = model.predict(np.expand_dims(sequence, axis=0))[0]
                 print(actions[np.argmax(res)])
                 predictions.append(np.argmax(res))
-                
-                #3. Viz logic
-                if np.unique(predictions[-10:])[0]==np.argmax(res): 
-                    if res[np.argmax(res)] > threshold: 
-                        
-                        if len(sentence) > 0: 
-                            if actions[np.argmax(res)] != sentence[-1]:
-                                sentence.append(actions[np.argmax(res)])
-                        else:
+
+                if res[np.argmax(res)] > threshold:
+                    if len(sentence) == 0: 
+                        sentence.append(actions[np.argmax(res)])
+                    if len(predictions) > 1 and np.argmax(res) == predictions[-2]:
+                        iframe += 1
+                    else:
+                        iframe = 0
+                    if iframe == 13:
+                        if actions[np.argmax(res)] != sentence[-1]:
                             sentence.append(actions[np.argmax(res)])
-
-                if len(sentence) > 5: 
-                    sentence = sentence[-5:]
-
-                # Viz probabilities
-                image = prob_viz(res, actions, image, colors)
-                sequence = []
 
             cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
             cv2.putText(image, ' '.join(sentence), (3,30), 
