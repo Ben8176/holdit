@@ -1,0 +1,119 @@
+[33mcommit 23627a05341baed6ae9429da1dace5baa45ae2b4[m[33m ([m[1;36mHEAD -> [m[1;32msend[m[33m)[m
+Author: Ben Garofalo <bentgarofalo@gmail.com>
+Date:   Sat Jan 20 17:02:44 2024 -0800
+
+    camera working
+
+[33mcommit 11310d8e05274dee4911a38b57fa95ecbed8237d[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Merge: def756d bce9687
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 06:15:42 2024 -0800
+
+    Merge branch 'main' of https://github.com/Ben8176/holdit
+
+[33mcommit def756da500adc74898e153fd09aeebbdf3c4a9c[m
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 06:15:29 2024 -0800
+
+    Add camera recording capability to app
+
+[33mcommit bce9687d232b1f700e9206827d42396e2fd71461[m
+Merge: 484596d 8b81c25
+Author: SRaswan <shauryaraswan@gmail.com>
+Date:   Sat Jan 20 04:49:42 2024 -0800
+
+    LOL
+    :wqMerge branch 'main' of github.com:Ben8176/holdit
+
+[33mcommit 484596d999e55e6e86f3473544362a1232472c71[m
+Author: SRaswan <shauryaraswan@gmail.com>
+Date:   Sat Jan 20 04:49:30 2024 -0800
+
+    Added asl stuff
+
+[33mcommit 8b81c25d5ffb48761c2ca2b0141f55a851e58118[m
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 04:29:54 2024 -0800
+
+    audio bugfix
+    
+    The woods are lovely, dark and deep, But I have promises to keep, And miles to go before I sleep, And miles to go before I sleep.
+
+[33mcommit 85330f7ec3413d8c4213604a763db8c195f70bbb[m
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 04:17:45 2024 -0800
+
+    audio
+    
+    it plays audio and it's 4am
+
+[33mcommit cbc4354cc319b201d6bf9d485650193a69c43ced[m
+Merge: d60503a 90f06da
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 02:26:03 2024 -0800
+
+    Merge branch 'main' of https://github.com/Ben8176/holdit
+
+[33mcommit d60503ae5be2231e76200bcc50576df67600a6a1[m
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 02:25:55 2024 -0800
+
+    opening screen
+    
+    hi im deaf, film me to converse!
+
+[33mcommit 90f06da0710945d12be0aec8363f2adf2928fe37[m
+Merge: 15bed4c 6b19df6
+Author: SRaswan <shauryaraswan@gmail.com>
+Date:   Sat Jan 20 02:10:25 2024 -0800
+
+    Asl and opencv
+
+[33mcommit 15bed4c1ab95e5d0f7beaf436084c489d3d5728f[m
+Author: SRaswan <shauryaraswan@gmail.com>
+Date:   Sat Jan 20 02:09:37 2024 -0800
+
+    Opencv and asl
+
+[33mcommit 6b19df66b29f556d9c8c61ee1b82eeb3a2ace75d[m
+Author: psjungle <psjha@ucsd.edu>
+Date:   Sat Jan 20 02:00:33 2024 -0800
+
+    copped elevenlabs
+
+[33mcommit a8f46b3f803db6d0a789a26281b6640dd0faaf84[m
+Author: psjungle <psjha@ucsd.edu>
+Date:   Sat Jan 20 01:33:02 2024 -0800
+
+    psjungle test
+
+[33mcommit a435e911a2747771c3a14f81b5dabed80b166438[m
+Merge: bfbdb5b cc580f5
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 01:26:39 2024 -0800
+
+    Merge branch 'main' of https://github.com/Ben8176/holdit
+
+[33mcommit bfbdb5b9a4e3afc236ad45288f173d00d36334e9[m
+Author: Tobias Fenner <tfenner@usc.edu>
+Date:   Sat Jan 20 01:26:31 2024 -0800
+
+    init
+
+[33mcommit cc580f54b5a4fe26858b53705cf863076b722b51[m
+Author: SRaswan <shauryaraswan@gmail.com>
+Date:   Sat Jan 20 01:17:40 2024 -0800
+
+    Added flask server inital
+
+[33mcommit 45d6989b4b52689a4df91985cbf1928500dda27d[m
+Author: Ben Garofalo <bentgarofalo@gmail.com>
+Date:   Sat Jan 20 00:59:53 2024 -0800
+
+    backend frontend
+
+[33mcommit 4473330861550a62aea490770eb0558420e4386a[m
+Author: Ben Garofalo <bentgarofalo@gmail.com>
+Date:   Sat Jan 20 00:53:57 2024 -0800
+
+    initial commmit
