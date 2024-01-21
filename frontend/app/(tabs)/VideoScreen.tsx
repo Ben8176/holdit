@@ -14,30 +14,30 @@ const soundFiles = {
   'hello_male': require('../../assets/audio/hello_male.mp3'),
   'hello_female': require('../../assets/audio/hello_female.mp3'),
   'hello_andro': require('../../assets/audio/hello_andro.mp3'),
-  'im_male': require('../../assets/audio/im_male.mp3'),
-  'im_female': require('../../assets/audio/im_female.mp3'),
-  'im_andro': require('../../assets/audio/im_andro.mp3'),
+  'iam_male': require('../../assets/audio/im_male.mp3'),
+  'iam_female': require('../../assets/audio/im_female.mp3'),
+  'iam_andro': require('../../assets/audio/im_andro.mp3'),
   'hungry_male': require('../../assets/audio/hungry_male.mp3'),
   'hungry_female': require('../../assets/audio/hungry_female.mp3'),
   'hungry_andro': require('../../assets/audio/hungry_andro.mp3'),
-  'null_male': require('../../assets/audio/null_male.mp3'),
-  'null_female': require('../../assets/audio/null_female.mp3'),
-  'null_andro': require('../../assets/audio/null_andro.mp3'),
+  '__male': require('../../assets/audio/null_male.mp3'),
+  '__female': require('../../assets/audio/null_female.mp3'),
+  '__andro': require('../../assets/audio/null_andro.mp3'),
   'good_male': require('../../assets/audio/good_male.mp3'),
   'good_female': require('../../assets/audio/good_female.mp3'),
   'good_andro': require('../../assets/audio/good_andro.mp3'),
-  'ily_male': require('../../assets/audio/ily_male.mp3'),
-  'ily_female': require('../../assets/audio/ily_female.mp3'),
-  'ily_andro': require('../../assets/audio/ily_andro.mp3'),
+  'iloveyou_male': require('../../assets/audio/ily_male.mp3'),
+  'iloveyou_female': require('../../assets/audio/ily_female.mp3'),
+  'iloveyou_andro': require('../../assets/audio/ily_andro.mp3'),
   'you_male': require('../../assets/audio/you_male.mp3'),
   'you_female': require('../../assets/audio/you_female.mp3'),
   'you_andro': require('../../assets/audio/you_andro.mp3'),
-  'sleepy_male': require('../../assets/audio/sleepy_male.mp3'),
-  'sleepy_female': require('../../assets/audio/sleepy_female.mp3'),
-  'sleepy_andro': require('../../assets/audio/sleepy_andro.mp3'),
-  'thankyou_male': require('../../assets/audio/thankyou_male.mp3'),
-  'thankyou_female': require('../../assets/audio/thankyou_female.mp3'),
-  'thankyou_andro': require('../../assets/audio/thankyou_andro.mp3'),
+  'tired_male': require('../../assets/audio/sleepy_male.mp3'),
+  'tired_female': require('../../assets/audio/sleepy_female.mp3'),
+  'tired_andro': require('../../assets/audio/sleepy_andro.mp3'),
+  'thanks_male': require('../../assets/audio/thankyou_male.mp3'),
+  'thanks_female': require('../../assets/audio/thankyou_female.mp3'),
+  'thanks_andro': require('../../assets/audio/thankyou_andro.mp3'),
 };
 
 const VideoScreen = () => {
@@ -177,7 +177,12 @@ const VideoScreen = () => {
         }
       );
 
-      console.log("Video upload response:", response.data);
+      console.log("Video upload response:", response.data.result);
+
+        //declare an array consisting of an array of the 
+
+      playSoundsSequentially(soundFiles, response.data.result, chosenVoice);
+
     } catch (error) {
       console.error("Video upload error:", error);
     }
