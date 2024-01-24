@@ -120,8 +120,6 @@ def video_to_text(video_path):
                 predictions.append(np.argmax(res))
 
                 if res[np.argmax(res)] > threshold:
-                    # if len(sentence) == 0: 
-                    #     sentence.append(actions[np.argmax(res)])
                     if len(predictions) > 1 and np.argmax(res) == predictions[-2]:
                         iframe += 1
                     else:
